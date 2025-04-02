@@ -27,7 +27,7 @@ export class HomePage implements OnInit {
     if (Capacitor.isNativePlatform()) {
       await this.getUserWeather();
     } else {
-      this.getWeatherByCity('Manila'); // Default city
+      this.getWeatherByCity('Cebu'); // Default city
     }
   }
 
@@ -36,7 +36,7 @@ export class HomePage implements OnInit {
     if (location) {
       this.getWeatherByCoords(location.lat, location.lon);
     } else {
-      this.getWeatherByCity('Manila'); // Fallback location
+      this.getWeatherByCity('Cebu'); // Fallback location
     }
   }
 
