@@ -1,0 +1,51 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Weather App</ion-title>
+    <ion-buttons slot="end">
+      <ion-toggle (ionChange)="toggleTheme($event)"></ion-toggle>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <!-- Search Bar -->
+  <ion-item class="search-bar">
+    <ion-input placeholder="Enter city..." [(ngModel)]="userLocation"></ion-input>
+    <ion-button color="primary" (click)="getWeatherByCity(userLocation)">🔍</ion-button>
+  </ion-item>
+
+  <!-- Current Weather Card -->
+  <ion-card class="weather-card" *ngIf="currentWeather">
+    <ion-card-header class="weather-header">
+      <ion-card-title>{{ currentWeather.name }}</ion-card-title>
+      <ion-card-subtitle>{{ currentWeather.weather[0].description | titlecase }}</ion-card-subtitle>
+    </ion-card-header>
+    
+    <ion-card-content class="weather-content">
+      <img [src]="'https://openweathermap.org/img/wn/' + currentWeather.weather[0].icon + '@2x.png'" alt="Weather Icon">
+      <h2>{{ currentWeather.main.temp }}°C</h2>
+      <p>💨 Humidity: {{ currentWeather.main.humidity }}%</p>
+      <p>🌬 Wind: {{ currentWeather.wind.speed }} m/s</p>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- 5-Day Forecast Section -->
+  <ion-card class="forecast-card">
+    <ion-card-header>
+      <ion-card-title>5-Day Forecast</ion-card-title>
+    </ion-card-header>
+    
+    <ion-card-content>
+      <ion-list class="forecast-list">
+        <ion-item *ngFor="let day of filteredForecast">
+          <div class="forecast-date">{{ day.dt_txt | date:'EEE, MMM d' }}</div>
+          <img [src]="'https://openweathermap.org/img/wn/' + day.weather[0].icon + '.png'" alt="Weather Icon">
+          <div class="forecast-temp">{{ day.main.temp }}°C</div>
+          <div class="forecast-info">
+            <p>💨 {{ day.main.humidity }}% | 🌬 {{ day.wind.speed }} m/s</p>
+          </div>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

@@ -1,0 +1,91 @@
+:host {
+  --bg-light: #f4f4f4;
+  --bg-dark: #1e1e1e;
+  --text-light: #222;
+  --text-dark: #fff;
+}
+
+ion-content {
+  background: var(--bg-light);
+  color: var(--text-light);
+  transition: background 0.5s, color 0.5s;
+}
+
+.dark-mode {
+  --bg-light: var(--bg-dark);
+  --text-light: var(--text-dark);
+}
+
+/* Search Bar */
+.search-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: white;
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+/* Weather Card */
+.weather-card {
+  text-align: center;
+  background: linear-gradient(135deg, #4facfe, #00f2fe);
+  color: white;
+  border-radius: 15px;
+  padding: 15px;
+  animation: fadeIn 1s ease-in-out;
+}
+
+.weather-header {
+  text-align: center;
+}
+
+.weather-content img {
+  width: 100px;
+}
+
+.weather-content h2 {
+  font-size: 3rem;
+}
+
+/* 5-Day Forecast */
+.forecast-card {
+  margin-top: 10px;
+  border-radius: 15px;
+}
+
+.forecast-list ion-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  margin: 5px 0;
+}
+
+.forecast-date {
+  flex: 1;
+  font-weight: bold;
+}
+
+.forecast-temp {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.forecast-info {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.forecast-list img {
+  width: 50px;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
