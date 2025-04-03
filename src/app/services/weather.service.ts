@@ -10,9 +10,9 @@ export class WeatherService {
 
   constructor() {}
 
-  // Get weather by coordinates
-  async getWeatherByCoords(lat: number, lon: number): Promise<any> {
-    const url = `${this.baseUrl}weather?lat=${lat}&lon=${lon}&appid=${this.apiKey}&units=metric`;
+  // ✅ Fetch Weather by Coordinates with Unit Option
+  async getWeatherByCoords(lat: number, lon: number, unit: string): Promise<any> {
+    const url = `${this.baseUrl}weather?lat=${lat}&lon=${lon}&appid=${this.apiKey}&units=${unit}`;
     try {
       const response = await axios.get(url);
       return response.data;
@@ -22,14 +22,26 @@ export class WeatherService {
     }
   }
 
-  // Get 5-day forecast
-  async getForecastByCoords(lat: number, lon: number): Promise<any> {
-    const url = `${this.baseUrl}forecast?lat=${lat}&lon=${lon}&appid=${this.apiKey}&units=metric`;
+  // ✅ Fetch Forecast by Coordinates with Unit Option
+  async getForecastByCoords(lat: number, lon: number, unit: string): Promise<any> {
+    const url = `${this.baseUrl}forecast?lat=${lat}&lon=${lon}&appid=${this.apiKey}&units=${unit}`;
     try {
       const response = await axios.get(url);
       return response.data;
     } catch (error) {
       console.error('Error fetching forecast:', error);
+      return null;
+    }
+  }
+
+  // ✅ Fetch Weather by City with Unit Option
+  async getWeatherByCity(city: string, unit: string): Promise<any> {
+    const url = `${this.baseUrl}weather?q=${city}&appid=${this.apiKey}&units=${unit}`;
+    try {
+      const response = await axios.get(url);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching city weather:', error);
       return null;
     }
   }

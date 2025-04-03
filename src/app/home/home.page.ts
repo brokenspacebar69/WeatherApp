@@ -15,19 +15,20 @@ export class HomePage implements OnInit {
   forecast: any;
   filteredForecast: any[] = [];
   userLocation: string = 'Loading...';
+  isCelsius: boolean = true; // ✅ Default to Celsius
 
   constructor(
     private weatherService: WeatherService,
     private geoService: GeolocationService,
     private storageService: StorageService,
-    private renderer: Renderer2 // ✅ Inject Renderer2 here
+    private renderer: Renderer2
   ) {}
 
   async ngOnInit() {
     if (Capacitor.isNativePlatform()) {
       await this.getUserWeather();
     } else {
-      this.getWeatherByCity('Cebu'); // Default city
+      this.getWeatherByCity('Cebu City'); // Default city
     }
   }
 
@@ -36,48 +37,52 @@ export class HomePage implements OnInit {
     if (location) {
       this.getWeatherByCoords(location.lat, location.lon);
     } else {
-      this.getWeatherByCity('Cebu'); // Fallback location
+      this.getWeatherByCity('Cebu City'); // Fallback location
     }
   }
 
   async getWeatherByCoords(lat: number, lon: number) {
-    this.currentWeather = await this.weatherService.getWeatherByCoords(lat, lon);
-    this.forecast = await this.weatherService.getForecastByCoords(lat, lon);
-    this.userLocation = this.currentWeather?.name || 'Unknown Location';
+    const unit = this.isCelsius ? 'metric' : 'imperial';
+    this.currentWeather = await this.weatherService.getWeatherByCoords(lat, lon, unit);
+    this.forecast = await this.weatherService.getForecastByCoords(lat, lon, unit);
+    this.userLocation = this.currentWeather?.name || 'Unknown';
 
-    this.filterForecast(this.forecast.list);
+    this.filterForecast(this.forecast?.list || []);
 
-    // Save to cache
     this.storageService.setItem('cachedWeather', this.currentWeather);
     this.storageService.setItem('cachedForecast', this.forecast);
   }
 
   async getWeatherByCity(city: string) {
-    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=41bb7c762e395055d99764504c4d7c3e&units=metric`;
-    try {
-      const response = await fetch(url);
-      this.currentWeather = await response.json();
-      this.userLocation = city;
+    const unit = this.isCelsius ? 'metric' : 'imperial';
+    this.currentWeather = await this.weatherService.getWeatherByCity(city, unit);
+    this.userLocation = city;
 
+    if (this.currentWeather?.coord) {
       const forecastData = await this.weatherService.getForecastByCoords(
         this.currentWeather.coord.lat,
-        this.currentWeather.coord.lon
+        this.currentWeather.coord.lon,
+        unit
       );
-
-      this.filterForecast(forecastData.list);
-    } catch (error) {
-      console.error('Error fetching city weather:', error);
+      this.filterForecast(forecastData?.list || []);
     }
   }
 
-  // Filter forecast to get one entry per day (around 12:00 PM)
   filterForecast(forecastList: any[]) {
     this.filteredForecast = forecastList.filter((item) =>
       item.dt_txt.includes('12:00:00')
     );
   }
 
-  // ✅ Add this function for theme toggling
+  // ✅ Toggle Celsius ↔ Fahrenheit
+  toggleTemperature() {
+    this.isCelsius = !this.isCelsius;
+    if (this.currentWeather?.coord) {
+      this.getWeatherByCoords(this.currentWeather.coord.lat, this.currentWeather.coord.lon);
+    }
+  }
+
+  // ✅ Theme Toggle
   toggleTheme(event: any) {
     if (event.detail.checked) {
       this.renderer.addClass(document.body, 'dark-mode');

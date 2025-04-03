@@ -14,22 +14,29 @@
     <ion-button color="primary" (click)="getWeatherByCity(userLocation)">🔍</ion-button>
   </ion-item>
 
+  <!-- Temperature Unit Toggle -->
+  <ion-item>
+    <ion-label>°C</ion-label>
+    <ion-toggle (ionChange)="toggleTemperature()"></ion-toggle>
+    <ion-label>°F</ion-label>
+  </ion-item>
+
   <!-- Current Weather Card -->
   <ion-card class="weather-card" *ngIf="currentWeather">
     <ion-card-header class="weather-header">
       <ion-card-title>{{ currentWeather.name }}</ion-card-title>
       <ion-card-subtitle>{{ currentWeather.weather[0].description | titlecase }}</ion-card-subtitle>
     </ion-card-header>
-    
+
     <ion-card-content class="weather-content">
       <img [src]="'https://openweathermap.org/img/wn/' + currentWeather.weather[0].icon + '@2x.png'" alt="Weather Icon">
-      <h2>{{ currentWeather.main.temp }}°C</h2>
+      <h2>{{ currentWeather.main.temp }}°{{ isCelsius ? 'C' : 'F' }}</h2>
       <p>💨 Humidity: {{ currentWeather.main.humidity }}%</p>
-      <p>🌬 Wind: {{ currentWeather.wind.speed }} m/s</p>
+      <p>🌬 Wind: {{ currentWeather.wind.speed }} {{ isCelsius ? 'm/s' : 'mph' }}</p>
     </ion-card-content>
   </ion-card>
 
-  <!-- 5-Day Forecast Section -->
+  <!-- 5-Day Forecast -->
   <ion-card class="forecast-card">
     <ion-card-header>
       <ion-card-title>5-Day Forecast</ion-card-title>
@@ -40,9 +47,9 @@
         <ion-item *ngFor="let day of filteredForecast">
           <div class="forecast-date">{{ day.dt_txt | date:'EEE, MMM d' }}</div>
           <img [src]="'https://openweathermap.org/img/wn/' + day.weather[0].icon + '.png'" alt="Weather Icon">
-          <div class="forecast-temp">{{ day.main.temp }}°C</div>
+          <div class="forecast-temp">{{ day.main.temp }}°{{ isCelsius ? 'C' : 'F' }}</div>
           <div class="forecast-info">
-            <p>💨 {{ day.main.humidity }}% | 🌬 {{ day.wind.speed }} m/s</p>
+            <p>💨 {{ day.main.humidity }}% | 🌬 {{ day.wind.speed }} {{ isCelsius ? 'm/s' : 'mph' }}</p>
           </div>
         </ion-item>
       </ion-list>
