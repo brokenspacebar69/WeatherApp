@@ -84,6 +84,24 @@ ion-content {
   width: 50px;
 }
 
+.scroll-container {
+  display: flex;
+  overflow-x: auto;
+  white-space: nowrap;
+  padding-bottom: 10px;
+}
+
+.hourly-list {
+  display: flex;
+  gap: 10px;
+}
+
+ion-item {
+  flex: 0 0 auto;
+  text-align: center;
+  min-width: 80px; /* Adjust as needed */
+}
+
 /* Animations */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-10px); }

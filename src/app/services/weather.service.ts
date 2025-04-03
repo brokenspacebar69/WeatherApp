@@ -10,7 +10,6 @@ export class WeatherService {
 
   constructor() {}
 
-  // ✅ Fetch Weather by Coordinates with Unit Option
   async getWeatherByCoords(lat: number, lon: number, unit: string): Promise<any> {
     const url = `${this.baseUrl}weather?lat=${lat}&lon=${lon}&appid=${this.apiKey}&units=${unit}`;
     try {
@@ -22,7 +21,6 @@ export class WeatherService {
     }
   }
 
-  // ✅ Fetch Forecast by Coordinates with Unit Option
   async getForecastByCoords(lat: number, lon: number, unit: string): Promise<any> {
     const url = `${this.baseUrl}forecast?lat=${lat}&lon=${lon}&appid=${this.apiKey}&units=${unit}`;
     try {
@@ -34,7 +32,6 @@ export class WeatherService {
     }
   }
 
-  // ✅ Fetch Weather by City with Unit Option
   async getWeatherByCity(city: string, unit: string): Promise<any> {
     const url = `${this.baseUrl}weather?q=${city}&appid=${this.apiKey}&units=${unit}`;
     try {

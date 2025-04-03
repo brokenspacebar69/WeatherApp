@@ -14,6 +14,7 @@ export class HomePage implements OnInit {
   currentWeather: any;
   forecast: any;
   filteredForecast: any[] = [];
+  hourlyForecast: any[] = [];  // ✅ Store hourly weather
   userLocation: string = 'Loading...';
   isCelsius: boolean = true; // ✅ Default to Celsius
 
@@ -69,6 +70,10 @@ export class HomePage implements OnInit {
   }
 
   filterForecast(forecastList: any[]) {
+    // ✅ Get hourly updates only for today
+    const today = new Date().getDate();
+    this.hourlyForecast = forecastList.filter((item) => new Date(item.dt_txt).getDate() === today);
+
     this.filteredForecast = forecastList.filter((item) =>
       item.dt_txt.includes('12:00:00')
     );

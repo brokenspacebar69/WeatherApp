@@ -36,6 +36,25 @@
     </ion-card-content>
   </ion-card>
 
+   <!-- Hourly Forecast -->
+<ion-card>
+  <ion-card-header>
+    <ion-card-title>Today's Hourly Forecast</ion-card-title>
+  </ion-card-header>
+  <ion-card-content>
+    <div class="scroll-container">
+      <ion-list class="hourly-list">
+        <ion-item *ngFor="let hour of hourlyForecast">
+          <div>{{ hour.dt_txt | date:'h a' }}</div>
+          <img [src]="'https://openweathermap.org/img/wn/' + hour.weather[0].icon + '.png'" alt="Weather Icon">
+          <div>{{ hour.main.temp }}°{{ isCelsius ? 'C' : 'F' }}</div>
+        </ion-item>
+      </ion-list>
+    </div>
+  </ion-card-content>
+</ion-card>
+
+
   <!-- 5-Day Forecast -->
   <ion-card class="forecast-card">
     <ion-card-header>
