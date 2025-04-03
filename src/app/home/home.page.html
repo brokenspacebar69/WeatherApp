@@ -2,12 +2,18 @@
   <ion-toolbar>
     <ion-title>Weather App</ion-title>
     <ion-buttons slot="end">
-      <ion-toggle (ionChange)="toggleTheme($event)"></ion-toggle>
+      <ion-toggle (ionChange)="toggleTheme($event)" [checked]="isDarkMode">🌙</ion-toggle>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
+  <!-- Severe Weather Alerts Toggle -->
+  <ion-item>
+    <ion-label>Severe Weather Alerts</ion-label>
+    <ion-toggle (ionChange)="toggleWeatherAlerts($event)" [checked]="alertsEnabled"></ion-toggle>
+  </ion-item>
+  
   <!-- Search Bar -->
   <ion-item class="search-bar">
     <ion-input placeholder="Enter city..." [(ngModel)]="userLocation"></ion-input>

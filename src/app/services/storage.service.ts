@@ -5,14 +5,12 @@ import { Preferences } from '@capacitor/preferences';
   providedIn: 'root',
 })
 export class StorageService {
-  constructor() {}
-
-  async setItem(key: string, value: any) {
-    await Preferences.set({ key, value: JSON.stringify(value) });
+  async setItem(key: string, value: string) {
+    await Preferences.set({ key, value });
   }
 
-  async getItem(key: string): Promise<any> {
+  async getItem(key: string): Promise<string | null> {
     const item = await Preferences.get({ key });
-    return item.value ? JSON.parse(item.value) : null;
+    return item.value;
   }
 }

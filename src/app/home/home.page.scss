@@ -11,9 +11,14 @@ ion-content {
   transition: background 0.5s, color 0.5s;
 }
 
-.dark-mode {
+body.dark-mode {
   --bg-light: var(--bg-dark);
   --text-light: var(--text-dark);
+}
+
+.dark-mode ion-content {
+  background: var(--bg-light);
+  color: var(--text-light);
 }
 
 /* Search Bar */

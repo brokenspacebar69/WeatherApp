@@ -1,4 +1,5 @@
 import { Component, OnInit, Renderer2 } from '@angular/core';
+import { LocalNotifications } from '@capacitor/local-notifications';
 import { WeatherService } from '../services/weather.service';
 import { GeolocationService } from '../services/geolocation.service';
 import { StorageService } from '../services/storage.service';
@@ -17,6 +18,8 @@ export class HomePage implements OnInit {
   hourlyForecast: any[] = [];  // ✅ Store hourly weather
   userLocation: string = 'Loading...';
   isCelsius: boolean = true; // ✅ Default to Celsius
+  alertsEnabled: boolean = false;
+  isDarkMode: boolean = false;
 
   constructor(
     private weatherService: WeatherService,
@@ -31,7 +34,31 @@ export class HomePage implements OnInit {
     } else {
       this.getWeatherByCity('Cebu City'); // Default city
     }
+  
+    // ✅ Load preferences
+    this.alertsEnabled = (await this.storageService.getItem('alertsEnabled')) === 'true';
+    this.isDarkMode = (await this.storageService.getItem('darkMode')) === 'true';
+  
+    // ✅ Apply theme
+    this.applyTheme();
   }
+
+  // New method to apply the theme
+  applyTheme() {
+    if (this.isDarkMode) {
+      this.renderer.addClass(document.body, 'dark-mode');
+    } else {
+      this.renderer.removeClass(document.body, 'dark-mode');
+    }
+  }
+
+  // ✅ Toggle theme
+  toggleTheme(event: any) {
+    this.isDarkMode = event.detail.checked;
+    this.storageService.setItem('darkMode', this.isDarkMode.toString());
+    this.applyTheme();  
+  }
+  
 
   async getUserWeather() {
     const location = await this.geoService.getCurrentLocation();
@@ -87,12 +114,26 @@ export class HomePage implements OnInit {
     }
   }
 
-  // ✅ Theme Toggle
-  toggleTheme(event: any) {
-    if (event.detail.checked) {
-      this.renderer.addClass(document.body, 'dark-mode');
-    } else {
-      this.renderer.removeClass(document.body, 'dark-mode');
+  toggleWeatherAlerts(event: any) {
+    this.alertsEnabled = event.detail.checked;
+    this.storageService.setItem('alertsEnabled', this.alertsEnabled.toString());
+  }
+
+  async checkForSevereWeather(weather: any) {
+    if (weather.main.temp > 35 || weather.main.temp < 0 || weather.weather[0].main === 'Thunderstorm') {
+      await LocalNotifications.schedule({
+        notifications: [
+          {
+            title: 'Severe Weather Alert!',
+            body: `Extreme conditions detected: ${weather.weather[0].description}`,
+            id: 1,
+            schedule: { at: new Date(Date.now() + 1000) },
+            sound: 'default',
+            smallIcon: 'ic_stat_name',
+            iconColor: '#FF0000'
+          }
+        ]
+      });
     }
   }
 }
