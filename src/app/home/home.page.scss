@@ -11,16 +11,6 @@ ion-content {
   transition: background 0.5s, color 0.5s;
 }
 
-body.dark-mode {
-  --bg-light: var(--bg-dark);
-  --text-light: var(--text-dark);
-}
-
-.dark-mode ion-content {
-  background: var(--bg-light);
-  color: var(--text-light);
-}
-
 /* Search Bar */
 .search-bar {
   display: flex;
@@ -107,7 +97,7 @@ ion-item {
   min-width: 80px; 
 }
 
-/* Animations */
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
