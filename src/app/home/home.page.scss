@@ -88,7 +88,7 @@ body.dark-mode {
 .forecast-list img {
   width: 50px;
 }
-
+//* Hourly Forecast */
 .scroll-container {
   display: flex;
   overflow-x: auto;
@@ -104,7 +104,7 @@ body.dark-mode {
 ion-item {
   flex: 0 0 auto;
   text-align: center;
-  min-width: 80px; /* Adjust as needed */
+  min-width: 80px; 
 }
 
 /* Animations */

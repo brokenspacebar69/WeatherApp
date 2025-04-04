@@ -15,9 +15,9 @@ export class HomePage implements OnInit {
   currentWeather: any;
   forecast: any;
   filteredForecast: any[] = [];
-  hourlyForecast: any[] = [];  // ✅ Store hourly weather
+  hourlyForecast: any[] = [];  // Store hourly weather
   userLocation: string = 'Loading...';
-  isCelsius: boolean = true; // ✅ Default to Celsius
+  isCelsius: boolean = true; // Default to Celsius
   alertsEnabled: boolean = false;
   isDarkMode: boolean = false;
 
@@ -35,15 +35,12 @@ export class HomePage implements OnInit {
       this.getWeatherByCity('Cebu City'); // Default city
     }
   
-    // ✅ Load preferences
     this.alertsEnabled = (await this.storageService.getItem('alertsEnabled')) === 'true';
     this.isDarkMode = (await this.storageService.getItem('darkMode')) === 'true';
   
-    // ✅ Apply theme
     this.applyTheme();
   }
 
-  // New method to apply the theme
   applyTheme() {
     if (this.isDarkMode) {
       this.renderer.addClass(document.body, 'dark-mode');
@@ -52,14 +49,24 @@ export class HomePage implements OnInit {
     }
   }
 
-  // ✅ Toggle theme
   toggleTheme(event: any) {
     this.isDarkMode = event.detail.checked;
     this.storageService.setItem('darkMode', this.isDarkMode.toString());
     this.applyTheme();  
   }
   
-
+  toggleTemperature() {
+    this.isCelsius = !this.isCelsius;
+    if (this.currentWeather?.coord) {
+      this.getWeatherByCoords(this.currentWeather.coord.lat, this.currentWeather.coord.lon);
+    }
+  }
+ 
+  toggleWeatherAlerts(event: any) {
+    this.alertsEnabled = event.detail.checked;
+    this.storageService.setItem('alertsEnabled', this.alertsEnabled.toString());
+  }
+  
   async getUserWeather() {
     const location = await this.geoService.getCurrentLocation();
     if (location) {
@@ -76,7 +83,9 @@ export class HomePage implements OnInit {
     this.userLocation = this.currentWeather?.name || 'Unknown';
 
     this.filterForecast(this.forecast?.list || []);
-
+    if (this.alertsEnabled && this.currentWeather) {
+      this.checkForSevereWeather(this.currentWeather);
+    }
     this.storageService.setItem('cachedWeather', this.currentWeather);
     this.storageService.setItem('cachedForecast', this.forecast);
   }
@@ -85,7 +94,7 @@ export class HomePage implements OnInit {
     const unit = this.isCelsius ? 'metric' : 'imperial';
     this.currentWeather = await this.weatherService.getWeatherByCity(city, unit);
     this.userLocation = city;
-
+    
     if (this.currentWeather?.coord) {
       const forecastData = await this.weatherService.getForecastByCoords(
         this.currentWeather.coord.lat,
@@ -95,9 +104,7 @@ export class HomePage implements OnInit {
       this.filterForecast(forecastData?.list || []);
     }
   }
-
   filterForecast(forecastList: any[]) {
-    // ✅ Get hourly updates only for today
     const today = new Date().getDate();
     this.hourlyForecast = forecastList.filter((item) => new Date(item.dt_txt).getDate() === today);
 
@@ -105,20 +112,7 @@ export class HomePage implements OnInit {
       item.dt_txt.includes('12:00:00')
     );
   }
-
-  // ✅ Toggle Celsius ↔ Fahrenheit
-  toggleTemperature() {
-    this.isCelsius = !this.isCelsius;
-    if (this.currentWeather?.coord) {
-      this.getWeatherByCoords(this.currentWeather.coord.lat, this.currentWeather.coord.lon);
-    }
-  }
-
-  toggleWeatherAlerts(event: any) {
-    this.alertsEnabled = event.detail.checked;
-    this.storageService.setItem('alertsEnabled', this.alertsEnabled.toString());
-  }
-
+  
   async checkForSevereWeather(weather: any) {
     if (weather.main.temp > 35 || weather.main.temp < 0 || weather.weather[0].main === 'Thunderstorm') {
       await LocalNotifications.schedule({
