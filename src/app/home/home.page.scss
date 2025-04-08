@@ -11,6 +11,12 @@ ion-content {
   transition: background 0.5s, color 0.5s;
 }
 
+ion-item {
+  flex: 0 0 auto;
+  text-align: center;
+  border-radius: 10px;
+}
+
 /* Search Bar */
 .search-bar {
   display: flex;
@@ -78,27 +84,53 @@ ion-content {
 .forecast-list img {
   width: 50px;
 }
-//* Hourly Forecast */
-.scroll-container {
+
+// Hourly Forecast
+.hourly-forecast-card {
+  margin-top: 15px;
+}
+
+.hourly-scroll-container {
   display: flex;
   overflow-x: auto;
-  white-space: nowrap;
-  padding-bottom: 10px;
-}
-
-.hourly-list {
-  display: flex;
   gap: 10px;
+  padding: 10px 0;
 }
 
-ion-item {
+.hourly-item {
   flex: 0 0 auto;
   text-align: center;
-  min-width: 80px; 
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 10px;
+  min-width: 80px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
 }
 
+.hourly-item img {
+  width: 50px;
+  height: 50px;
+}
+
+.hourly-item .hour {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: var(--ion-text-color);
+}
+
+.hourly-item .temp {
+  font-size: 1rem;
+  font-weight: bold;
+  color: var(--ion-text-color);
+}
 
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+
+
+
+

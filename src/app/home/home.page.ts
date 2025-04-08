@@ -4,6 +4,7 @@ import { WeatherService } from '../services/weather.service';
 import { GeolocationService } from '../services/geolocation.service';
 import { StorageService } from '../services/storage.service';
 import { Capacitor } from '@capacitor/core';
+import { Network } from '@capacitor/network';
 
 @Component({
   selector: 'app-home',
@@ -15,11 +16,12 @@ export class HomePage implements OnInit {
   currentWeather: any;
   forecast: any;
   filteredForecast: any[] = [];
-  hourlyForecast: any[] = [];  // Store hourly weather
+  hourlyForecast: any[] = [];  
   userLocation: string = 'Loading...';
-  isCelsius: boolean = true; // Default to Celsius
+  isCelsius: boolean = true; 
   alertsEnabled: boolean = false;
   isDarkMode: boolean = false;
+  isOnline: boolean = true;
 
   constructor(
     private weatherService: WeatherService,
@@ -29,15 +31,17 @@ export class HomePage implements OnInit {
   ) {}
 
   async ngOnInit() {
-    if (Capacitor.isNativePlatform()) {
+    this.isOnline = await this.checkNetworkStatus();
+
+    if (this.isOnline) {
       await this.getUserWeather();
     } else {
-      this.getWeatherByCity('Cebu City'); // Default city
+      this.loadCachedWeather();
     }
-  
+
     this.alertsEnabled = (await this.storageService.getItem('alertsEnabled')) === 'true';
     this.isDarkMode = (await this.storageService.getItem('darkMode')) === 'true';
-  
+
     this.applyTheme();
   }
 
@@ -57,8 +61,15 @@ export class HomePage implements OnInit {
   
   toggleTemperature() {
     this.isCelsius = !this.isCelsius;
-    if (this.currentWeather?.coord) {
-      this.getWeatherByCoords(this.currentWeather.coord.lat, this.currentWeather.coord.lon);
+
+    if (this.isOnline) {
+      
+      if (this.currentWeather?.coord) {
+        this.getWeatherByCoords(this.currentWeather.coord.lat, this.currentWeather.coord.lon);
+      }
+    } else {
+      
+      this.loadCachedWeather();
     }
   }
  
@@ -77,37 +88,50 @@ export class HomePage implements OnInit {
   }
 
   async getWeatherByCoords(lat: number, lon: number) {
-    const unit = this.isCelsius ? 'metric' : 'imperial';
-    this.currentWeather = await this.weatherService.getWeatherByCoords(lat, lon, unit);
-    this.forecast = await this.weatherService.getForecastByCoords(lat, lon, unit);
+    const celsiusWeather = await this.weatherService.getWeatherByCoords(lat, lon, 'metric');
+    const fahrenheitWeather = await this.weatherService.getWeatherByCoords(lat, lon, 'imperial');
+    const celsiusForecast = await this.weatherService.getForecastByCoords(lat, lon, 'metric');
+    const fahrenheitForecast = await this.weatherService.getForecastByCoords(lat, lon, 'imperial');
+
+    this.currentWeather = this.isCelsius ? celsiusWeather : fahrenheitWeather;
+    this.forecast = this.isCelsius ? celsiusForecast : fahrenheitForecast;
     this.userLocation = this.currentWeather?.name || 'Unknown';
 
     this.filterForecast(this.forecast?.list || []);
-    if (this.alertsEnabled && this.currentWeather) {
-      this.checkForSevereWeather(this.currentWeather);
-    }
-    this.storageService.setItem('cachedWeather', this.currentWeather);
-    this.storageService.setItem('cachedForecast', this.forecast);
+
+    
+    this.storageService.setItem('cachedWeatherCelsius', celsiusWeather);
+    this.storageService.setItem('cachedWeatherFahrenheit', fahrenheitWeather);
+    this.storageService.setItem('cachedForecastCelsius', celsiusForecast);
+    this.storageService.setItem('cachedForecastFahrenheit', fahrenheitForecast);
   }
 
   async getWeatherByCity(city: string) {
-    const unit = this.isCelsius ? 'metric' : 'imperial';
-    this.currentWeather = await this.weatherService.getWeatherByCity(city, unit);
+    const celsiusWeather = await this.weatherService.getWeatherByCity(city, 'metric');
+    const fahrenheitWeather = await this.weatherService.getWeatherByCity(city, 'imperial');
+    const celsiusForecast = await this.weatherService.getForecastByCity(city, 'metric');
+    const fahrenheitForecast = await this.weatherService.getForecastByCity(city, 'imperial');
+
+    this.currentWeather = this.isCelsius ? celsiusWeather : fahrenheitWeather;
+    this.forecast = this.isCelsius ? celsiusForecast : fahrenheitForecast;
     this.userLocation = city;
+
+    this.filterForecast(this.forecast?.list || []);
+
     
-    if (this.currentWeather?.coord) {
-      const forecastData = await this.weatherService.getForecastByCoords(
-        this.currentWeather.coord.lat,
-        this.currentWeather.coord.lon,
-        unit
-      );
-      this.filterForecast(forecastData?.list || []);
-    }
+    this.storageService.setItem('cachedWeatherCelsius', celsiusWeather);
+    this.storageService.setItem('cachedWeatherFahrenheit', fahrenheitWeather);
+    this.storageService.setItem('cachedForecastCelsius', celsiusForecast);
+    this.storageService.setItem('cachedForecastFahrenheit', fahrenheitForecast);
   }
+  
   filterForecast(forecastList: any[]) {
     const today = new Date().getDate();
+
+    
     this.hourlyForecast = forecastList.filter((item) => new Date(item.dt_txt).getDate() === today);
 
+    
     this.filteredForecast = forecastList.filter((item) =>
       item.dt_txt.includes('12:00:00')
     );
@@ -128,6 +152,27 @@ export class HomePage implements OnInit {
           }
         ]
       });
+    }
+  }
+
+  async checkNetworkStatus() {
+    const status = await Network.getStatus();
+    return status.connected;
+  }
+
+  async loadCachedWeather() {
+    const cachedWeatherCelsius = await this.storageService.getItem('cachedWeatherCelsius');
+    const cachedWeatherFahrenheit = await this.storageService.getItem('cachedWeatherFahrenheit');
+    const cachedForecastCelsius = await this.storageService.getItem('cachedForecastCelsius');
+    const cachedForecastFahrenheit = await this.storageService.getItem('cachedForecastFahrenheit');
+
+    
+    this.currentWeather = this.isCelsius ? cachedWeatherCelsius : cachedWeatherFahrenheit;
+    this.forecast = this.isCelsius ? cachedForecastCelsius : cachedForecastFahrenheit;
+    this.userLocation = this.currentWeather?.name || 'Unknown';
+
+    if (this.forecast) {
+      this.filterForecast(this.forecast.list || []);
     }
   }
 }

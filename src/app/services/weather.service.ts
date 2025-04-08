@@ -42,4 +42,10 @@ export class WeatherService {
       return null;
     }
   }
+
+  async getForecastByCity(city: string, units: string): Promise<any> {
+    
+    const response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?q=${city}&units=${units}&appid=41bb7c762e395055d99764504c4d7c3e`);
+    return response.json();
+  }
 }

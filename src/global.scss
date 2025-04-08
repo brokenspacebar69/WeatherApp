@@ -36,25 +36,25 @@
    @import "@ionic/angular/css/palettes/dark.class.css"; 
 
 body.dark-mode {
-    --ion-background-color: #121212;
-    --ion-text-color: #ffffff;
-    --ion-toolbar-background: #1f1f1f;
-    --ion-card-background: #1e1e1e;
-    --ion-item-background: #2a2a2a;
-    --ion-color-primary: #4caf50;
-  
-    background-color: var(--ion-background-color) !important;
-    color: var(--ion-text-color) !important;
-  }
-  
-  ion-toolbar,
-  ion-card,
-  ion-header, 
-  ion-item {
-    background-color: var(--ion-background-color);
-    color: var(--ion-text-color);
-  }
-  
-  ion-title {
-  color: var(--text-light);
+  --ion-background-color: #181818; 
+  --ion-text-color: #e0e0e0; 
+  --ion-toolbar-background: #242424; 
+  --ion-card-background: #1f1f1f; 
+  --ion-item-background: #2c2c2c; 
+  --ion-color-primary: #ff9800; 
+
+  background-color: var(--ion-background-color) !important;
+  color: var(--ion-text-color) !important;
+}
+
+ion-toolbar,
+ion-card,
+ion-header, 
+ion-item {
+  background-color: var(--ion-background-color);
+  color: var(--ion-text-color);
+}
+
+ion-title {
+  color: var(--ion-color-primary);
 }
