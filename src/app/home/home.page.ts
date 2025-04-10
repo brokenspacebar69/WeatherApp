@@ -83,7 +83,7 @@ export class HomePage implements OnInit {
     if (location) {
       this.getWeatherByCoords(location.lat, location.lon);
     } else {
-      this.getWeatherByCity('Cebu City'); // Fallback location
+      this.getWeatherByCity('Cebu City'); 
     }
   }
 
