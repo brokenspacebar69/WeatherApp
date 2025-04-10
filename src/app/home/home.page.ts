@@ -1,4 +1,4 @@
-import { Component, OnInit, Renderer2 } from '@angular/core';
+import { Component, OnInit, OnDestroy, Renderer2 } from '@angular/core';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { WeatherService } from '../services/weather.service';
 import { GeolocationService } from '../services/geolocation.service';
@@ -12,7 +12,7 @@ import { Network } from '@capacitor/network';
   styleUrls: ['home.page.scss'],
   standalone: false,
 })
-export class HomePage implements OnInit {
+export class HomePage implements OnInit, OnDestroy {
   currentWeather: any;
   forecast: any;
   filteredForecast: any[] = [];
@@ -22,6 +22,7 @@ export class HomePage implements OnInit {
   alertsEnabled: boolean = false;
   isDarkMode: boolean = false;
   isOnline: boolean = true;
+  networkListener: any;
 
   constructor(
     private weatherService: WeatherService,
@@ -43,6 +44,14 @@ export class HomePage implements OnInit {
     this.isDarkMode = (await this.storageService.getItem('darkMode')) === 'true';
 
     this.applyTheme();
+
+    this.networkListener = Network.addListener('networkStatusChange', async (status) => {
+      this.isOnline = status.connected;
+      if (this.isOnline) {
+        console.log('Back online. Refreshing weather data...');
+        await this.getUserWeather();
+      }
+    });
   }
 
   applyTheme() {
@@ -173,6 +182,12 @@ export class HomePage implements OnInit {
 
     if (this.forecast) {
       this.filterForecast(this.forecast.list || []);
+    }
+  }
+
+  ngOnDestroy() {
+    if (this.networkListener) {
+      this.networkListener.remove();
     }
   }
 }
