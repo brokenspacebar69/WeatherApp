@@ -125,6 +125,15 @@ ion-item {
   color: var(--ion-text-color);
 }
 
+.country-flag {
+  width: 24px;
+  height: 16px;
+  margin-left: 8px;
+  vertical-align: middle;
+  border-radius: 2px;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
+}
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-10px); }
   to { opacity: 1; transform: translateY(0); }

@@ -35,9 +35,16 @@
   <!-- Current Weather Card -->
   <ion-card class="weather-card" *ngIf="currentWeather">
     <ion-card-header class="weather-header">
-      <ion-card-title>{{ currentWeather.name }}</ion-card-title>
-      <ion-card-subtitle>{{ currentWeather.weather[0].description | titlecase }}</ion-card-subtitle>
-    </ion-card-header>
+      <ion-card-title>{{ currentWeather.name }}
+        <img
+        *ngIf="currentWeather.sys.country"
+        [src]="'https://flagcdn.com/w40/' + currentWeather.sys.country.toLowerCase() + '.png'"
+        alt="{{ currentWeather.sys.country }} Flag"
+        class="country-flag"
+      />
+    </ion-card-title>
+    <ion-card-subtitle>{{ currentWeather.weather[0].description | titlecase }}</ion-card-subtitle>
+  </ion-card-header>
 
     <ion-card-content class="weather-content">
       <img [src]="'https://openweathermap.org/img/wn/' + currentWeather.weather[0].icon + '@2x.png'" alt="Weather Icon">
